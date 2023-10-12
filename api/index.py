@@ -67,7 +67,7 @@ async def fetchResponse(req,host):
   await connectRequest(connection, req.command, req.path, reqBody, reqHeaders)
   res = await connectResponse(connection)
   return res
-class onRequest(BaseHTTPRequestHandler):  
+class handler(BaseHTTPRequestHandler):  
   async def do_TEST(self,data):
     self.send_response(200)
     self.send_header('Content-type','text/plain')
