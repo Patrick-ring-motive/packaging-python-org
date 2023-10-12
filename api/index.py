@@ -6,7 +6,8 @@ import sys,threading
 
 
 def handle_exception(exc_type, exc_value, exc_traceback):
-  print("Closed due to an error. This is the full error report:")
+  print("Unhandled Exception")
+sys.excepthook = handle_exception
 
 run_old = threading.Thread.run
 def run(*args, **kwargs):
@@ -17,8 +18,7 @@ def run(*args, **kwargs):
 threading.Thread.run = run
 
 
-# install handler for exceptions
-sys.excepthook = handle_exception
+
 
 
 def none():
@@ -96,15 +96,18 @@ class onRequest(BaseHTTPRequestHandler):
       await writeResponseBody(request,b'')
       return
     request.wfile.flush()
-    request.wfile.close()
-    closeRequest(request)
+    #request.wfile.close()
+    #closeRequest(request)
   def do_GET(request):
     try:
       asyncio.run(request.do_METHOD(request))
     except:
       return request
   def do_OPTIONS(request):
-    asyncio.run(writeResponseBody(request,b'*'))
+    try:
+      asyncio.run(writeResponseBody(request,b'*'))
+    except:
+      none()
   def do_POST(request):
     asyncio.run(request.do_METHOD(request))
   def do_PUT(request):
