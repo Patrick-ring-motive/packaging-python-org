@@ -102,7 +102,7 @@ class handler(BaseHTTPRequestHandler):
       await writeResponseBody(request,b'')
       return
     request.wfile.flush()
-    request.wfile.close()
+    #request.wfile.close()
     #closeRequest(request)
   def do_GET(request):
     try:
