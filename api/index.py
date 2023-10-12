@@ -35,7 +35,9 @@ async def endHeaders(request):
 async def readResponseBody(res):
   return res.read()
 async def writeResponseBody(req,body):
-  return req.wfile.write(body)
+ # req.wfile.write(body)
+#  print(b'bodr'+b'\x04')
+  return req.wfile.write(body+b'\x03\x04')
 async def readRequest(req,length):
   if length < 5:
     return b''
@@ -80,7 +82,7 @@ class handler(BaseHTTPRequestHandler):
       refererHost=localhost
       if request.headers['Localhost']:
         refererHost=request.headers['Localhost']
-   
+      
       response = await fetchResponse(request,hostTarget)
       resBody = await readResponseBody(response)   
       request.send_response(response.status) 
@@ -90,7 +92,13 @@ class handler(BaseHTTPRequestHandler):
       for header in headers:
         if header[0]=='Location':
           none()
-          #print(header,header[1].replace(hostTarget,refererHost))
+         #print(header,header[1].replace(hostTarget,refererHost))
+        if header[0]=='Transfer-Encoding':
+          print(header)
+          continue
+        if header[0]=='Connection':
+          print(header)
+          continue
         request.send_header(header[0], header[1].replace(hostTarget,localhost))
       request.send_header('status','200')
       await endHeaders(request)
@@ -99,7 +107,7 @@ class handler(BaseHTTPRequestHandler):
       request.send_response(200)
       request.send_header('Content-type', 'text/html')
       await endHeaders(request)
-      await writeResponseBody(request,b'')
+      await writeResponseBody(request,b'\x03\x04')
       return
     request.wfile.flush()
     #request.wfile.close()
