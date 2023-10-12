@@ -68,6 +68,12 @@ async def fetchResponse(req,host):
   res = await connectResponse(connection)
   return res
 class onRequest(BaseHTTPRequestHandler):  
+  async def do_TEST(self,data):
+    self.send_response(200)
+    self.send_header('Content-type','text/plain')
+    self.end_headers()
+    self.wfile.write('Hello, world!'.encode('utf-8'))
+    return
   async def do_METHOD(request,data):
     try:
       localhost = request.headers['Host']
@@ -100,9 +106,9 @@ class onRequest(BaseHTTPRequestHandler):
     #closeRequest(request)
   def do_GET(request):
     try:
-      asyncio.run(request.do_METHOD(request))
+      asyncio.run(request.do_TEST(request))
     except:
-      return request
+      return
   def do_OPTIONS(request):
     try:
       asyncio.run(writeResponseBody(request,b'*'))
