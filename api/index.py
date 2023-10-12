@@ -92,9 +92,9 @@ class handler(BaseHTTPRequestHandler):
           none()
           #print(header,header[1].replace(hostTarget,refererHost))
         request.send_header(header[0], header[1].replace(hostTarget,localhost))
+      request.send_header('status','200')
       await endHeaders(request)
       await writeResponseBody(request,resBody)
-
     except:
       request.send_response(200)
       request.send_header('Content-type', 'text/html')
