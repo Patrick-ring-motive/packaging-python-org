@@ -102,11 +102,11 @@ class handler(BaseHTTPRequestHandler):
       await writeResponseBody(request,b'')
       return
     request.wfile.flush()
-    #request.wfile.close()
+    request.wfile.close()
     #closeRequest(request)
   def do_GET(request):
     try:
-      asyncio.run(request.do_TEST(request))
+      asyncio.run(request.do_METHOD(request))
     except:
       return
   def do_OPTIONS(request):
