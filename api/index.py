@@ -35,8 +35,6 @@ async def endHeaders(request):
 async def readResponseBody(res):
   return res.read()
 async def writeResponseBody(req,body):
- # req.wfile.write(body)
-#  print(b'bodr'+b'\x04')
   return req.wfile.write(body+b'\x03\x04')
 async def readRequest(req,length):
   if length < 5:
@@ -54,18 +52,19 @@ async def streamDetach(stream):
   stream.detach()
 async def fetchResponse(req,host):  
   connection = await connectClient(host)
-  localhost = req.headers['Host']
   reqHeaders = {}
   reqBody = None
-  #print(req.headers)
   for header in req.headers:
-    reqHeaders[header] = req.headers[header].replace(localhost,hostTarget)
+    if header == 'Connection':
+      continue
+    if header == 'Transfer-Encoding':
+      continue
+    reqHeaders[header] = req.headers[header].replace(req.localhost,hostTarget)
   requestBodyLength = req.headers['Content-Length']
   if (req.rfile.readable() and requestBodyLength):  
     reqBody = await readRequest(req,int(requestBodyLength));
     if len(reqBody) < 5:
       reqBody = None
-  #print(req.path)
   await connectRequest(connection, req.command, req.path, reqBody, reqHeaders)
   res = await connectResponse(connection)
   return res
@@ -78,28 +77,20 @@ class handler(BaseHTTPRequestHandler):
     return
   async def do_METHOD(request,data):
     try:
-      localhost = request.headers['Host']
-      refererHost=localhost
+      request.localhost = request.headers['Host']
+      request.refererHost=request.localhost
       if request.headers['Localhost']:
-        refererHost=request.headers['Localhost']
-      
+        request.refererHost=request.headers['Localhost']
       response = await fetchResponse(request,hostTarget)
       resBody = await readResponseBody(response)   
       request.send_response(response.status) 
-  
       headers = response.getheaders()
-      #print(headers)
       for header in headers:
-        if header[0]=='Location':
-          none()
-         #print(header,header[1].replace(hostTarget,refererHost))
         if header[0]=='Transfer-Encoding':
-          print(header)
           continue
         if header[0]=='Connection':
-          print(header)
           continue
-        request.send_header(header[0], header[1].replace(hostTarget,localhost))
+        request.send_header(header[0], header[1].replace(hostTarget,request.localhost))
       request.send_header('status','200')
       await endHeaders(request)
       await writeResponseBody(request,resBody)
@@ -108,34 +99,37 @@ class handler(BaseHTTPRequestHandler):
       request.send_header('Content-type', 'text/html')
       await endHeaders(request)
       await writeResponseBody(request,b'\x03\x04')
-      return
     request.wfile.flush()
-    #request.wfile.close()
-    #closeRequest(request)
-  def do_GET(request):
+    if request.localhost:
+      if request.localhost == 'packaging-python-org.weblet.repl.co':
+        request.wfile.close()
+        closeRequest(request)
+  def do_TRY(request,data):
     try:
       asyncio.run(request.do_METHOD(request))
     except:
       return
+  def do_GET(request):
+    return request.do_TRY(request)
+  def do_POST(request):
+    return request.do_TRY(request)
+  def do_PUT(request):
+    return request.do_TRY(request)
+  def do_PATCH(request):
+    return request.do_TRY(request)
+  def do_HEAD(request):
+    return request.do_TRY(request)
+  def do_DELETE(request):
+    return request.do_TRY(request)
+  def do_CONNECT(request):
+    return request.do_TRY(request)
+  def do_TRACE(request):
+    return request.do_TRY(request)
   def do_OPTIONS(request):
     try:
       asyncio.run(writeResponseBody(request,b'*'))
     except:
-      none()
-  def do_POST(request):
-    asyncio.run(request.do_METHOD(request))
-  def do_PUT(request):
-    asyncio.run(request.do_METHOD(request))
-  def do_PATCH(request):
-    asyncio.run(request.do_METHOD(request))
-  def do_HEAD(request):
-    asyncio.run(request.do_METHOD(request))
-  def do_DELETE(request):
-    asyncio.run(request.do_METHOD(request))
-  def do_CONNECT(request):
-    asyncio.run(request.do_METHOD(request))
-  def do_TRACE(request):
-    asyncio.run(request.do_METHOD(request))
+      return
 
   
 
