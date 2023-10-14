@@ -3,8 +3,8 @@ import sys
 import uvloop
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 import http.client
-from api.src.uvaloop import *
-from api.src.xhttp import *
+from src.uvaloop import *
+from src.xhttp import *
 
 
 
