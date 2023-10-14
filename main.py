@@ -5,6 +5,5 @@ import asyncio
 from api.index import *
 
 httpd = ThreadingHTTPServer(('', 8000), handler)
-#httpd = HTTPServer(('', 8000), onRequest)
 httpd.serve_forever()
-#asyncio.run(AsyncHTTPServer());
+
