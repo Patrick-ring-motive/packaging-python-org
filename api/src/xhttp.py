@@ -1,10 +1,8 @@
 import asyncio
 import sys
-from src.uvloop import *
-import uvloop
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 import http.client
-from src.xpy import *
+from api.src.xpy import *
 
 def closeRequest(request):
   if 'close' in request.close:

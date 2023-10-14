@@ -1,11 +1,8 @@
 import asyncio
 import sys
-from src.uvloop import *
-import uvloop
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 import http.client
-from src.uvaloop import *
-from src.xhttp import *
+from api.src.xhttp import *
 
 
 
@@ -44,7 +41,7 @@ class handler(BaseHTTPRequestHandler):
         closeRequest(request)
   def do_TRY(request,data):
     try:
-      async_run(request.do_METHOD,[request])
+      asyncio.run(request.do_METHOD(request))
     except:
       return
   def do_GET(request):
