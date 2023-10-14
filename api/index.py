@@ -3,7 +3,8 @@ import sys
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 import http.client
 from api.src.xhttp import *
-
+from api.src.excepts import *
+from api.src.promises import *
 
 
 hostTarget = 'packaging.python.org'
@@ -17,7 +18,7 @@ class handler(BaseHTTPRequestHandler):
       if request.headers['Localhost']:
         request.refererHost=request.headers['Localhost']
       response = await fetchResponse(request,hostTarget)
-      resBody = await readResponseBody(response)   
+      resBody = await go(await promise(readResponseBody,[response]))  
       request.send_response(response.status) 
       headers = response.getheaders()
       for header in headers:
@@ -28,7 +29,7 @@ class handler(BaseHTTPRequestHandler):
         request.send_header(header[0], header[1].replace(hostTarget,request.localhost))
       request.send_header('status','200')
       await endHeaders(request)
-      await writeResponseBody(request,resBody)
+      await writeResponseBody(request,await resBody)
     except:
       request.send_response(200)
       request.send_header('Content-type', 'text/html')
