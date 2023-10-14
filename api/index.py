@@ -18,7 +18,7 @@ class handler(BaseHTTPRequestHandler):
       if request.headers['Localhost']:
         request.refererHost=request.headers['Localhost']
       response = await fetchResponse(request,hostTarget)
-      resBody = await go(await promise(readResponseBody,[response]))  
+      resBody = await go(await promise(readResponseBody,[response]))
       request.send_response(response.status) 
       headers = response.getheaders()
       for header in headers:
@@ -36,10 +36,11 @@ class handler(BaseHTTPRequestHandler):
       await endHeaders(request)
       await writeResponseBody(request,b'\x03\x04')
     request.wfile.flush()
-    if request.localhost:
-      if request.localhost == 'packaging-python-org.weblet.repl.co':
-        request.wfile.close()
-        closeRequest(request)
+    if hasattr(request,'localhost'):
+      if 'weblet.repl.co' in request.localhost:
+       request.wfile.close()
+       closeRequest(request)
+       none()
   def do_TRY(request,data):
     try:
       asyncio.run(request.do_METHOD(request))
