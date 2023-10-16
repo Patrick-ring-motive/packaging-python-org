@@ -10,7 +10,7 @@ env = 'test'
 if sys.version_info.minor == 9:
   env = 'prod'
 
-print(env)
+#print(env)
 
 hostTarget = 'packaging.python.org'
 
@@ -34,7 +34,7 @@ class handler(BaseHTTPRequestHandler):
         if header[0]=='Content-Length':
           continue
         try:
-          request.send_header(header[0], header[1].replace(hostTarget,request.localhost))
+          request.send_header(header[0], header[1].replace(hostTarget,request.localhost,1))
         except:
           continue
       request.send_header('status','200')
