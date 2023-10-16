@@ -31,6 +31,8 @@ class handler(BaseHTTPRequestHandler):
           continue
         if header[0]=='Connection':
           continue
+        if header[0]=='Content-Length':
+          continue
         request.send_header(header[0], header[1].replace(hostTarget,request.localhost))
       request.send_header('status','200')
       await endHeaders(request)
