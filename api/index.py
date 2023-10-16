@@ -6,6 +6,11 @@ from api.src.xhttp import *
 from api.src.excepts import *
 from api.src.promises import *
 
+env = 'test'
+if sys.version_info.minor == 9:
+  env = 'prod'
+
+print(env)
 
 hostTarget = 'packaging.python.org'
 
@@ -37,7 +42,7 @@ class handler(BaseHTTPRequestHandler):
       await writeResponseBody(request,b'\x03\x04')
     request.wfile.flush()
     if hasattr(request,'localhost'):
-      if 'weblet.repl.co' in request.localhost:
+      if env == 'test':
        request.wfile.close()
        closeRequest(request)
        none()
